@@ -10,7 +10,7 @@ urlpatterns = [
         "favicon.ico",
         RedirectView.as_view(url=f"{settings.SIMPLEUI_INDEX}/favicon.ico"),
     ),
-    path("admin/", admin.site.urls)
+    path("admin/", admin.site.urls),
 ]
 
 handler400 = exceptions.bad_request
