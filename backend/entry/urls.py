@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib import admin
 from django.urls import path
 from django.views.generic import RedirectView
 
@@ -9,6 +10,7 @@ urlpatterns = [
         "favicon.ico",
         RedirectView.as_view(url=f"{settings.SIMPLEUI_INDEX}/favicon.ico"),
     ),
+    path("admin/", admin.site.urls)
 ]
 
 handler400 = exceptions.bad_request
