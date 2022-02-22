@@ -1,7 +1,7 @@
 from django.http import Http404, JsonResponse
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, status
-from rest_framework.exceptions import APIException, Throttled, ValidationError
+from rest_framework.exceptions import APIException, Throttled
 from rest_framework.response import Response
 
 
@@ -22,12 +22,7 @@ def exception_handler(exc, context):
         if getattr(exc, "wait", None):
             headers["Retry-After"] = "%d" % exc.wait
 
-        if isinstance(exc, ValidationError):
-            data = exc.detail
-            msg = ""
-            for field, val in data.items():
-                msg += "[{}]{} ".format(field, ",".join(val))
-        elif isinstance(exc.detail, (list, dict)):
+        if isinstance(exc.detail, (list, dict)):
             data = exc.detail
             msg = "failed"
         else:

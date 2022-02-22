@@ -5,8 +5,6 @@ Django 4
 import os
 from pathlib import Path
 
-from django.utils.translation import gettext_lazy as _
-
 from utils.logs import get_logging_config_dict
 from utils.tools import getenv_or_raise
 
@@ -51,6 +49,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "apps.account",
+    "apps.circle",
 ]
 
 # 中间件
@@ -100,7 +100,6 @@ DATABASES = {
         "PASSWORD": getenv_or_raise("DB_PASSWORD"),
         "HOST": getenv_or_raise("DB_HOST"),
         "PORT": int(getenv_or_raise("DB_PORT")),
-        "OPTIONS": {"charset": "utf8mb4"},
     }
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -137,7 +136,7 @@ TIME_ZONE = os.getenv("DEFAULT_TIME_ZONE", "Asia/Shanghai")
 USE_I18N = True
 USE_L10N = True
 USE_TZ = False
-LANGUAGES = (("zh-hans", _("中文简体")),)
+LANGUAGES = (("zh-hans", "中文简体"),)
 LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 # 静态文件
@@ -151,7 +150,7 @@ STATICFILES_DIRS = [
 SESSION_COOKIE_NAME = os.getenv("SESSION_COOKIE_NAME", f"{APP_CODE}-sessionid")
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
+SESSION_COOKIE_AGE = 60 * 60 * 24 * int(os.getenv("SESSION_COOKIE_AGE", 365))
 SESSION_COOKIE_DOMAIN = os.getenv("SESSION_COOKIE_DOMAIN")
 
 # 日志
@@ -164,12 +163,12 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["utils.renderers.APIRenderer"],
     "DEFAULT_PAGINATION_CLASS": "utils.paginations.NumPagination",
     "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
-    "DEFAULT_THROTTLE_RATES": {},
+    "DEFAULT_THROTTLE_RATES": {"login_scope": "3/m"},
     "EXCEPTION_HANDLER": "utils.exceptions.exception_handler",
-    "UNAUTHENTICATED_USER": "modules.account.models.CustomAnonymousUser",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "utils.authenticators.SessionAuthenticate",
     ],
+    "DEFAULT_CHARSET": "utf8mb4",
 }
 
 # Admin Site

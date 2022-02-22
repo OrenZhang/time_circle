@@ -16,12 +16,7 @@ class NumPagination(PageNumberPagination):
             OrderedDict(
                 [
                     ("count", self.page.paginator.count),
-                    ("page", self.page.number),
                     ("results", data),
                 ]
             )
         )
-
-
-class RepoListNumPagination(NumPagination):
-    page_size = 16
