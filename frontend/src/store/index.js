@@ -1,26 +1,40 @@
 import { createStore } from 'vuex'
+import { getUserInfoAPI } from '../api/user'
 
 const store = createStore({
-    state () {
+    state() {
         return {
             mainLoading: true,
+            user: {
+                username: ''
+            }
         }
     },
     mutations: {
-        setMainLoading (state, payload) {
+        setMainLoading(state, payload) {
             state.mainLoading = payload
         },
+        setUser(state, payload) {
+            state.user = payload
+        }
     },
     actions: {
-        setMainLoading ({ commit }, payload) {
+        setMainLoading({ commit }, payload) {
             if (payload) {
                 commit('setMainLoading', true)
             } else {
                 setTimeout(() => {
-                    commit('setMainLoading', status)
+                    commit('setMainLoading', false)
                 }, 600)
             }
         },
+        getUserInfo({ commit, dispatch }) {
+            getUserInfoAPI().then(
+                res => commit('setUser', res.data.data)
+            ).finally(
+                () => dispatch('setMainLoading', false)
+            )
+        }
     }
 })
 
