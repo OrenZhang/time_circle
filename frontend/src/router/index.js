@@ -30,7 +30,7 @@ const routes = [
 ]
 
 const router = vueRouter.createRouter({
-    history: vueRouter.createWebHashHistory(),
+    history: vueRouter.createWebHistory(),
     routes
 })
 
