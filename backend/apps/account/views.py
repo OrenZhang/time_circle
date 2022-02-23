@@ -25,8 +25,7 @@ class UserView(GenericViewSet):
     )
     def sign_in(self, request, *args, **kwargs):
         serializer = LoginFormSerializer(data=request.data)
-        if not serializer.is_valid():
-            raise LoginFailed("登陆表单有误")
+        serializer.is_valid(raise_exception=True)
         user = auth.authenticate(**serializer.validated_data)
         if user is None:
             raise LoginFailed("用户名或密码错误")

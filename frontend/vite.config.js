@@ -2,7 +2,9 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [
+        vue()
+    ],
     base: '/',
     publicDir: 'public',
     server: {
@@ -21,9 +23,9 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                manualChunks (id) {
-                    if (id.includes('node_modules/element-plus')) {
-                        return 'element-plus'
+                manualChunks(id) {
+                    if (id.includes('node_modules/tdesign-vue-next')) {
+                        return 'tdesign-vue-next'
                     }
                     if (id.includes('node_modules/echarts')) {
                         return 'echarts'

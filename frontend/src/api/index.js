@@ -1,6 +1,6 @@
 import axios from 'axios'
 import globalContext from '../context'
-import store from '../store'
+import router from '../router'
 
 const http = axios
 
@@ -12,6 +12,9 @@ http.interceptors.response.use(res => {
     return Promise.resolve(res)
 }, err => {
     err = err.response
+    if (err.status === 401) {
+        router.push({ name: 'Login' })
+    }
     return Promise.reject(err)
 })
 

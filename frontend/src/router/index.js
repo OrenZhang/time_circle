@@ -8,6 +8,21 @@ const routes = [
         component: () => import('../views/Home.vue')
     },
     {
+        path: '/login',
+        name: 'Login',
+        component: () => import('../views/Login.vue')
+    },
+    {
+        path: '/category',
+        name: 'Admin',
+        component: () => import('../views/Admin.vue')
+    },
+    {
+        path: '/time',
+        name: 'Time',
+        component: () => import('../views/Time.vue')
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: '404',
         component: () => import('../components/ErrorPage.vue')
@@ -15,7 +30,7 @@ const routes = [
 ]
 
 const router = vueRouter.createRouter({
-    history: vueRouter.createWebHistory(),
+    history: vueRouter.createWebHashHistory(),
     routes
 })
 

@@ -1,6 +1,8 @@
+from django.core.exceptions import MultipleObjectsReturned
 from django.db import models, transaction
 
 from constents import SHORT_CHAR_LENGTH, USERNAME_CHAR_LENGTH
+from utils.exceptions import ServerError
 
 DB_PREFIX = "circle_"
 
@@ -26,18 +28,36 @@ class Category(models.Model):
     @transaction.atomic()
     def delete(self, using=None, keep_parents=False):
         Item.objects.filter(category_id=self.id).delete()
+        children = Category.objects.filter(parent_id=self.id)
+        for child in children:
+            child.delete()
         return super().delete(using, keep_parents)
+
+
+class ItemManager(models.Manager):
+    def unfinished_item(self, username):
+        category_ids = Category.objects.filter(creator=username).values_list(
+            "id", flat=True
+        )
+        try:
+            item = Item.objects.get(category_id__in=category_ids, archived=False)
+        except Item.DoesNotExist:
+            return None
+        except MultipleObjectsReturned:
+            raise ServerError()
+        return item
 
 
 class Item(models.Model):
     """事项"""
 
     category_id = models.BigIntegerField("目录ID")
-    start_at = models.DateTimeField("开始时间")
-    end_at = models.DateTimeField("结束时间")
+    start_at = models.DateTimeField("开始时间", auto_now_add=True)
+    end_at = models.DateTimeField("结束时间", null=True)
     archived = models.BooleanField("存档状态", default=False)
-    create_at = models.DateTimeField("创建时间", auto_now_add=True)
     ordering = ["-create_at"]
+
+    objects = ItemManager()
 
     class Meta:
         db_table = f"{DB_PREFIX}circle"
