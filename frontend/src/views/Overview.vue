@@ -26,7 +26,24 @@
     import moment from 'moment'
     import { overviewCommonAPI } from '../api/overview'
     import { MessagePlugin } from 'tdesign-vue-next'
-    import * as echarts from 'echarts'
+    import * as echarts from 'echarts/core'
+    import { PieChart } from 'echarts/charts'
+    import {
+        GridComponent,
+        DatasetComponent,
+        TransformComponent
+    } from 'echarts/components'
+    import { LabelLayout, UniversalTransition } from 'echarts/features'
+    import { SVGRenderer } from 'echarts/renderers'
+    echarts.use([
+        PieChart,
+        GridComponent,
+        DatasetComponent,
+        TransformComponent,
+        LabelLayout,
+        UniversalTransition,
+        SVGRenderer
+    ])
 
     const router = useRouter()
 
