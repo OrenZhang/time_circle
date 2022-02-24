@@ -83,7 +83,6 @@
     const changeData = (value) => {
         dateRange.value = value
         loadData()
-        loadChartData()
     }
 
     const loadData = () => overviewCommonAPI({

@@ -139,7 +139,7 @@ class OverviewView(GenericViewSet):
         items = Item.objects.filter(
             category_id__in=categories.values_list("id", flat=True),
             start_at__gte=start_date,
-            end_at__lt=end_date + datetime.timedelta(days=1),
+            start_at__lt=end_date + datetime.timedelta(days=1),
             archived=True,
         )
         # 为事项所在层级及以上层级添加时间
@@ -168,7 +168,7 @@ class OverviewView(GenericViewSet):
         items = Item.objects.filter(
             category_id__in=categories.values_list("id", flat=True),
             start_at__gte=start_date,
-            end_at__lt=end_date + datetime.timedelta(days=1),
+            start_at__lt=end_date + datetime.timedelta(days=1),
             archived=True,
         )
         tmp = {}
