@@ -24,12 +24,7 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.includes('node_modules/tdesign-vue-next')) {
-                        return 'tdesign-vue-next'
-                    }
-                    if (id.includes('node_modules/echarts')) {
-                        return 'echarts'
-                    }
+                    return 'index'
                 }
             }
         },

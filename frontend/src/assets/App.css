@@ -279,5 +279,5 @@ body {
 }
 
 .t-breadcrumb__separator svg {
-    color: var(--td-font-white-1);
+    color: var(--td-text-color-primary);
 }
