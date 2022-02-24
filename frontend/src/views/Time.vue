@@ -191,4 +191,16 @@
     padding-left: 20px;
     padding-right: 20px;
 }
+
+@media screen and (max-width: 500px) {
+    .clock {
+        width: 100%;
+    }
+    .buttons {
+        width: 100%;
+    }
+    .buttons :deep(.t-select__wrap) {
+        overflow: hidden;
+    }
+}
 </style>
