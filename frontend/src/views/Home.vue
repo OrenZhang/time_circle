@@ -22,7 +22,7 @@
             title: 'Overview',
             bg: 'var(--td-success-color-4)',
             path: {
-                name: 'Home'
+                name: 'Overview'
             }
         },
         {

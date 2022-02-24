@@ -1,3 +1,5 @@
+import math
+
 from django.core.exceptions import MultipleObjectsReturned
 from django.db import models, transaction
 
@@ -32,6 +34,16 @@ class Category(models.Model):
         for child in children:
             child.delete()
         return super().delete(using, keep_parents)
+
+    @property
+    def families(self):
+        """从树的末端向上查找"""
+        data = [self.id]
+        if self.parent_id == 0:
+            return data
+        category = Category.objects.get(id=self.parent_id)
+        data.extend(category.families)
+        return data
 
 
 class ItemManager(models.Manager):
@@ -68,3 +80,7 @@ class Item(models.Model):
     def __str__(self):
         category = Category.objects.get(id=self.category_id)
         return f"{category.name}:{self.start_at}:{self.end_at}"
+
+    @property
+    def duration(self):
+        return math.ceil((self.end_at - self.start_at).total_seconds())

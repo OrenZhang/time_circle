@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet, mixins
@@ -8,8 +10,11 @@ from apps.circle.serializers import (
     CategorySerializer,
     ItemSerializer,
     ItemStopSerializer,
+    OverviewRequestSerializer,
+    OverviewSerializer,
 )
 from utils.exceptions import Error404, OperationError, ParamsNotFound, PermissionDenied
+from utils.tools import duration_format
 
 
 class CategoryView(ModelViewSet):
@@ -92,3 +97,62 @@ class ItemView(mixins.CreateModelMixin, GenericViewSet):
         instance.archived = True
         instance.save()
         return Response()
+
+    @action(methods=["GET"], detail=False)
+    def todo(self, request, *args, **kwargs):
+        category_ids = Category.objects.filter(
+            creator=request.user.username
+        ).values_list("id", flat=True)
+        items = Item.objects.filter(category_id__in=category_ids, archived=False)
+        if not items.exists():
+            return Response({"todo": False, "item": None})
+        item = items.first()
+        serializer = self.get_serializer(item)
+        resp = {"todo": True, "item": serializer.data}
+        return Response(resp)
+
+
+class OverviewView(GenericViewSet):
+    """预览"""
+
+    queryset = Item.objects.all()
+    serializer_class = OverviewSerializer
+
+    @action(methods=["POST"], detail=False)
+    def common(self, request, *args, **kwargs):
+        # 校验
+        req_serializer = OverviewRequestSerializer(data=request.data)
+        req_serializer.is_valid(raise_exception=True)
+        start_date = req_serializer.validated_data["start_date"]
+        end_date = req_serializer.validated_data["end_date"]
+        # 获取用户目录
+        categories = Category.objects.filter(creator=request.user.username)
+        category_map = {
+            category.id: {"instance": category, "duration": 0}
+            for category in categories
+        }
+        # 获取时间内的所有事项
+        items = Item.objects.filter(
+            category_id__in=categories.values_list("id", flat=True),
+            start_at__gte=start_date,
+            end_at__lt=end_date + datetime.timedelta(days=1),
+            archived=True,
+        )
+        # 为事项所在层级及以上层级添加时间
+        for item in items:
+            for node_id in category_map[item.category_id]["instance"].families:
+                category_map[node_id]["duration"] += item.duration
+        # 为序列化后的数据添加时间
+        temp_data = CategoryReadSerializer(instance=categories, many=True).data
+        data_map = {category["id"]: category for category in temp_data}
+        for category_id, category_map_data in category_map.items():
+            data_map[category_id]["duration"] = category_map_data["duration"]
+        # 处理响应数据
+        data = []
+        for category in data_map.values():
+            if category["duration"] < 1:
+                continue
+            category["duration_format"] = duration_format(category["duration"])
+            data.append(category)
+        data.sort(key=lambda x: x["full_name"])
+        return Response(data)

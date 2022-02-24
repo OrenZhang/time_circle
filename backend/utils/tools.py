@@ -76,3 +76,19 @@ def getenv_or_raise(key: str):
     if val is None:
         raise Exception(f"Env Not Set, Key [{key}]")
     return val
+
+
+def format_number(num):
+    if len(str(num)) == 1:
+        return f"0{str(num)}"
+    return num
+
+
+def duration_format(duration: int):
+    hours = duration // 3600
+    left_seconds = duration % 3600
+    minutes = left_seconds // 60
+    seconds = left_seconds % 60
+    return "{}:{}:{}".format(
+        format_number(hours), format_number(minutes), format_number(seconds)
+    )

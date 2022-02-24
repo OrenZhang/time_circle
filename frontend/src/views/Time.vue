@@ -11,9 +11,9 @@
             </div>
             <div class="buttons">
                 <t-select
-                    :disabled="countInfo.id !== 0" placeholder="-请选择-" v-model="currentCategory" :options="categories"
+                    :disabled="countInfo.id !== 0" :loading="loading" placeholder="-请选择-" v-model="currentCategory" :options="categories"
                     filterable :keys="{ value: 'id', label: 'full_name' }" :bordered="false" />
-                <t-button theme="default" variant="text" :disabled="!currentCategory" @click="countControl">
+                <t-button theme="default" variant="text" :loading="loading" :disabled="!currentCategory" @click="countControl">
                     {{ countInfo.id !== 0 ? '停止计时' : '开始计时' }}
                 </t-button>
             </div>
@@ -24,11 +24,22 @@
 <script setup>
     import { onMounted, onUnmounted, ref } from 'vue'
     import { useRouter } from 'vue-router'
-    import { loadCategoriesAPI, startItemAPI, stopItemAPI } from '../api/circle'
+    import { loadCategoriesAPI, startItemAPI, stopItemAPI, todoItemAPI } from '../api/circle'
     import { MessagePlugin } from 'tdesign-vue-next'
     import moment from 'moment'
 
     const router = useRouter()
+
+    const loading = ref(false)
+    const setLoading = (status) => {
+        if (status) {
+            loading.value = true
+        } else {
+            setTimeout(() => {
+                loading.value = false
+            }, 600)
+        }
+    }
 
     const breadItems = ref([
         {
@@ -87,6 +98,7 @@
         'start_at': new Date()
     })
     const countControl = () => {
+        setLoading(true)
         if (countInfo.value.id === 0) {
             startItemAPI({ 'category_id': currentCategory.value }).then(
                 res => {
@@ -95,7 +107,7 @@
                     countInfo.value = data
                 },
                 err => MessagePlugin.error(err.data.msg)
-            )
+            ).finally(() => setLoading(false))
         } else {
             const endAt = moment().format('YYYY-MM-DD HH:mm:ss')
             stopItemAPI(countInfo.value.id, { end_at: endAt }).then(
@@ -106,11 +118,25 @@
                         'start_at': null
                     }
                     timeCount.value = '00:00:00'
+                    currentCategory.value = null
+                    MessagePlugin.success('记录创建成功')
                 },
                 err => MessagePlugin.error(err.data.msg)
-            )
+            ).finally(() => setLoading(false))
         }
     }
+
+    const loadTodoItem = () => todoItemAPI().then(
+        res => {
+            if (res.data.data.todo) {
+                const data = res.data.data.item
+                data.start_at = new Date(data.start_at)
+                countInfo.value = data
+                currentCategory.value = data.category_id
+            }
+        }, err => MessagePlugin.error(err.data.msg)
+    )
+    onMounted(loadTodoItem)
 </script>
 
 <style scoped>
