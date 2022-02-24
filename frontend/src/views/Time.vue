@@ -14,10 +14,30 @@
                     :disabled="countInfo.id !== 0" :loading="loading" placeholder="-请选择-" v-model="currentCategory" :options="categories"
                     filterable :keys="{ value: 'id', label: 'full_name' }" :bordered="false" />
                 <t-button theme="default" variant="text" :loading="loading" :disabled="!currentCategory" @click="countControl">
-                    {{ countInfo.id !== 0 ? '停止计时' : '开始计时' }}
+                    {{ countInfo.id !== 0 ? '结束计时' : '开始计时' }}
                 </t-button>
             </div>
         </div>
+        <t-dialog
+            v-model:visible="endAtVisible" :cancel-btn="null" :confirm-btn="null"
+            header="结束计时" class="submit-dialog">
+            <t-form label-width="60px" :colon="true" @submit="doEnd">
+                <t-form-item label="时间" name="datetime">
+                    <t-date-picker
+                        theme="primary"
+                        mode="date"
+                        format="YYYY-MM-DD HH:mm:ss"
+                        enable-time-picker
+                        v-model:value="endAt"
+                    />
+                </t-form-item>
+                <t-form-item style="padding-top: 8px" class="submit-button">
+                    <t-button theme="primary" type="submit" style="margin-right: 10px">
+                        提交
+                    </t-button>
+                </t-form-item>
+            </t-form>
+        </t-dialog>
     </div>
 </template>
 
@@ -101,29 +121,36 @@
         'category_id': 0,
         'start_at': ''
     })
+    const endAt = ref(null)
+    const endAtVisible = ref(false)
     const countControl = () => {
-        setLoading(true)
         if (countInfo.value.id === 0) {
+            setLoading(true)
             startItemAPI({ 'category_id': currentCategory.value }).then(
                 res => countInfo.value = res.data.data,
                 err => MessagePlugin.error(err.data.msg)
             ).finally(() => setLoading(false))
         } else {
-            const endAt = moment().format('YYYY-MM-DD HH:mm:ss')
-            stopItemAPI(countInfo.value.id, { end_at: endAt }).then(
-                () => {
-                    countInfo.value = {
-                        'id': 0,
-                        'category_id': 0,
-                        'start_at': null
-                    }
-                    timeCount.value = '00:00:00'
-                    currentCategory.value = null
-                    MessagePlugin.success('记录创建成功')
-                },
-                err => MessagePlugin.error(err.data.msg)
-            ).finally(() => setLoading(false))
+            endAt.value = new moment().format('YYYY-MM-DD HH:mm:ss')
+            endAtVisible.value = true
         }
+    }
+    const doEnd = () => {
+        endAtVisible.value = false
+        setLoading(true)
+        stopItemAPI(countInfo.value.id, { end_at: endAt.value }).then(
+            () => {
+                countInfo.value = {
+                    'id': 0,
+                    'category_id': 0,
+                    'start_at': null
+                }
+                timeCount.value = '00:00:00'
+                currentCategory.value = null
+                MessagePlugin.success('记录创建成功')
+            },
+            err => MessagePlugin.error(err.data.msg)
+        ).finally(() => setLoading(false))
     }
 
     const loadTodoItem = () => todoItemAPI().then(
@@ -185,6 +212,10 @@
     width: 380px;
 }
 
+.t-date-picker {
+    width: 100%;
+}
+
 .buttons .t-button {
     height: 100%;
     border: 2px solid var(--td-gray-color-3);
@@ -193,6 +224,18 @@
 .buttons :deep(.t-button--variant-text) {
     padding-left: 20px;
     padding-right: 20px;
+}
+
+.submit-button :deep(.t-form__controls-content) {
+    float: right;
+}
+
+.submit-button :deep(.t-form__controls-content) .t-button {
+    margin-right: 0!important;
+}
+
+.submit-dialog :deep(.t-dialog__body) {
+    padding-bottom: 0 !important;
 }
 
 @media screen and (max-width: 500px) {
