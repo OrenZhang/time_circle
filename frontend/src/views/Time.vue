@@ -167,7 +167,7 @@
     align-items: center;
     font-weight: bold;
     font-size: 48px;
-    border: 2px solid var(--td-gray-color-6);
+    border: 2px solid var(--td-gray-color-3);
     border-radius: 5px;
     color: var(--td-text-color-primary);
 }
@@ -177,15 +177,19 @@
     display: flex;
 }
 
+.buttons :deep(.t-select) {
+    width: 100%;
+    border: 2px solid var(--td-gray-color-3);
+}
+
 .buttons :deep(.t-select__wrap) {
-    border: 2px solid var(--td-gray-color-6);
-    border-radius: 5px;
+    padding-right: 20px;
+    width: 380px;
 }
 
 .buttons .t-button {
     height: 100%;
-    border: 2px solid var(--td-gray-color-6);
-    margin-left: 20px;
+    border: 2px solid var(--td-gray-color-3);
 }
 
 .buttons :deep(.t-button--variant-text) {
@@ -202,6 +206,7 @@
     }
     .buttons :deep(.t-select__wrap) {
         overflow: hidden;
+        width: 100%;
     }
 }
 </style>
