@@ -49,3 +49,14 @@ class ItemSerializer(serializers.ModelSerializer):
 
 class ItemStopSerializer(serializers.Serializer):
     end_at = serializers.DateTimeField(required=True, allow_null=False)
+
+
+class OverviewRequestSerializer(serializers.Serializer):
+    start_date = serializers.DateTimeField(required=True, allow_null=False)
+    end_date = serializers.DateTimeField(required=True, allow_null=False)
+
+
+class OverviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = "__all__"
