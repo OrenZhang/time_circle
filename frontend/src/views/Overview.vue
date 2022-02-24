@@ -6,7 +6,7 @@
             </t-breadcrumbItem>
         </t-breadcrumb>
         <t-date-picker mode="date" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
-        <div class="echart-box" v-show="showEchart">
+        <div class="echart-box">
             <div id="echart-graph-0" style="width: 100%; height:360px;" />
         </div>
         <t-table
@@ -24,7 +24,7 @@
     import { onMounted, ref } from 'vue'
     import { useRouter } from 'vue-router'
     import moment from 'moment'
-    import { overviewCommonAPI } from '../api/overview'
+    import { overviewChartAPI, overviewCommonAPI } from '../api/overview'
     import { MessagePlugin } from 'tdesign-vue-next'
     import * as echarts from 'echarts/core'
     import { PieChart } from 'echarts/charts'
@@ -83,6 +83,7 @@
     const changeData = (value) => {
         dateRange.value = value
         loadData()
+        loadChartData()
     }
 
     const loadData = () => overviewCommonAPI({
@@ -91,27 +92,13 @@
     }).then(
         res => {
             categories.value = res.data.data
-            if (categories.value.length === 0) {
-                showEchart.value = false
-            } else {
-                initEcharts(categories.value)
-            }
+            initEcharts(res.data.data)
         },
         err => MessagePlugin.error(err.data.msg)
     )
     onMounted(loadData)
 
-    const showEchart = ref(true)
     const initEcharts = (data) => {
-        const source = []
-        const fields = []
-        for (const category of data) {
-            source.push({
-                name: category.full_name,
-                value: category.duration
-            })
-            fields.push(category.full_name)
-        }
         const myChart = echarts.init(document.getElementById('echart-graph-0'))
         myChart.setOption({
             xAxis: {
@@ -119,13 +106,12 @@
                 axisTick: {
                     alignWithLabel: true
                 },
-                data: fields
             },
             yAxis: {},
             series: [
                 {
                     type: 'pie',
-                    data: source,
+                    data: data,
                     roseType: 'area'
                 }
             ],

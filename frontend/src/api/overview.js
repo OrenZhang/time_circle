@@ -5,3 +5,9 @@ export const overviewCommonAPI = (data) => new Promise((resolve, reject) => {
         '/circle/overview/common/', data
     ).then(res => resolve(res), err => reject(err))
 })
+
+export const overviewChartAPI = (data) => new Promise((resolve, reject) => {
+    http.post(
+        '/circle/overview/chart/', data
+    ).then(res => resolve(res), err => reject(err))
+})

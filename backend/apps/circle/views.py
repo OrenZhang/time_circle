@@ -118,13 +118,17 @@ class OverviewView(GenericViewSet):
     queryset = Item.objects.all()
     serializer_class = OverviewSerializer
 
-    @action(methods=["POST"], detail=False)
-    def common(self, request, *args, **kwargs):
-        # 校验
-        req_serializer = OverviewRequestSerializer(data=request.data)
+    def verify_date(self, data):
+        req_serializer = OverviewRequestSerializer(data=data)
         req_serializer.is_valid(raise_exception=True)
         start_date = req_serializer.validated_data["start_date"]
         end_date = req_serializer.validated_data["end_date"]
+        return start_date, end_date
+
+    @action(methods=["POST"], detail=False)
+    def full(self, request, *args, **kwargs):
+        # 校验
+        start_date, end_date = self.verify_date(request.data)
         # 获取用户目录
         categories = Category.objects.filter(creator=request.user.username)
         category_map = {
@@ -153,6 +157,32 @@ class OverviewView(GenericViewSet):
             if category["duration"] < 1:
                 continue
             category["duration_format"] = duration_format(category["duration"])
+            data.append(category)
+        data.sort(key=lambda x: x["full_name"])
+        return Response(data)
+
+    @action(methods=["POST"], detail=False)
+    def common(self, request, *args, **kwargs):
+        start_date, end_date = self.verify_date(request.data)
+        categories = Category.objects.filter(creator=request.user.username)
+        items = Item.objects.filter(
+            category_id__in=categories.values_list("id", flat=True),
+            start_at__gte=start_date,
+            end_at__lt=end_date + datetime.timedelta(days=1),
+            archived=True,
+        )
+        tmp = {}
+        for item in items:
+            if item.category_id in tmp.keys():
+                tmp[item.category_id]["value"] += item.duration
+            else:
+                category = categories.get(id=item.category_id)
+                serialzier = CategoryReadSerializer(category)
+                tmp[category.id] = serialzier.data
+                tmp[category.id]["value"] = item.duration
+        data = []
+        for category in tmp.values():
+            category["duration_format"] = duration_format(category["value"])
             data.append(category)
         data.sort(key=lambda x: x["full_name"])
         return Response(data)
