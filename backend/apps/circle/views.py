@@ -158,7 +158,7 @@ class OverviewView(GenericViewSet):
                 continue
             category["duration_format"] = duration_format(category["duration"])
             data.append(category)
-        data.sort(key=lambda x: x["full_name"])
+        data.sort(key=lambda x: x["duration"], reverse=True)
         return Response(data)
 
     @action(methods=["POST"], detail=False)
@@ -184,5 +184,5 @@ class OverviewView(GenericViewSet):
         for category in tmp.values():
             category["duration_format"] = duration_format(category["value"])
             data.append(category)
-        data.sort(key=lambda x: x["full_name"])
+        data.sort(key=lambda x: x["value"], reverse=True)
         return Response(data)
