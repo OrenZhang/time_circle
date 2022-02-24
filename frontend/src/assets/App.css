@@ -1,5 +1,4 @@
-:root,
-:root[theme-mode="light"] {
+:root {
     --td-brand-color-1: #ecf2fe;
     --td-brand-color-2: #d4e3fc;
     --td-brand-color-3: #bbd3fb;
@@ -118,6 +117,134 @@
     --td-table-shadow-color: rgba(0, 0, 0, 8%);
 
     --td-scrollbar-color: rgba(0, 0, 0, 10%);
+    --u-bg-color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --td-brand-color-1: #1b2f51 !important;
+        --td-brand-color-2: #173463 !important;
+        --td-brand-color-3: #143975 !important;
+        --td-brand-color-4: #103d88 !important;
+        --td-brand-color-5: #0d429a !important;
+        --td-brand-color-6: #054bbe !important;
+        --td-brand-color-7: #2667d4 !important;
+        --td-brand-color-8: #4582e6 !important;
+        --td-brand-color-9: #699ef5 !important;
+        --td-brand-color-10: #96bbf8 !important;
+        --td-warning-color-1: #4f2a1d !important;
+        --td-warning-color-2: #582f21 !important;
+        --td-warning-color-3: #733c23 !important;
+        --td-warning-color-4: #a75d2b !important;
+        --td-warning-color-5: #cf6e2d !important;
+        --td-warning-color-6: #dc7633 !important;
+        --td-warning-color-7: #e8935c !important;
+        --td-warning-color-8: #ecbf91 !important;
+        --td-warning-color-9: #eed7bf !important;
+        --td-warning-color-10: #f3e9dc !important;
+        --td-error-color-1: #472324 !important;
+        --td-error-color-2: #5e2a2d !important;
+        --td-error-color-3: #703439 !important;
+        --td-error-color-4: #83383e !important;
+        --td-error-color-5: #a03f46 !important;
+        --td-error-color-6: #c64751 !important;
+        --td-error-color-7: #de6670 !important;
+        --td-error-color-8: #ec888e !important;
+        --td-error-color-9: #edb1b6 !important;
+        --td-error-color-10: #eeced0 !important;
+        --td-success-color-1: #193a2a !important;
+        --td-success-color-2: #1a4230 !important;
+        --td-success-color-3: #17533d !important;
+        --td-success-color-4: #0d7a55 !important;
+        --td-success-color-5: #059465 !important;
+        --td-success-color-6: #43af8a !important;
+        --td-success-color-7: #46bf96 !important;
+        --td-success-color-8: #80d2b6 !important;
+        --td-success-color-9: #b4e1d3 !important;
+        --td-success-color-10: #deede8 !important;
+        --td-gray-color-1: #f3f3f3 !important;
+        --td-gray-color-2: #eee !important;
+        --td-gray-color-3: #e7e7e7 !important;
+        --td-gray-color-4: #dcdcdc !important;
+        --td-gray-color-5: #c5c5c5 !important;
+        --td-gray-color-6: #a6a6a6 !important;
+        --td-gray-color-7: #8b8b8b !important;
+        --td-gray-color-8: #777 !important;
+        --td-gray-color-9: #5e5e5e !important;
+        --td-gray-color-10: #4b4b4b !important;
+        --td-gray-color-11: #383838 !important;
+        --td-gray-color-12: #2c2c2c !important;
+        --td-gray-color-13: #242424 !important;
+        --td-gray-color-14: #181818 !important;
+        --td-font-white-1: rgba(255, 255, 255, 0.9) !important;
+        --td-font-white-2: rgba(255, 255, 255, 0.55) !important;
+        --td-font-white-3: rgba(255, 255, 255, 0.35) !important;
+        --td-font-white-4: rgba(255, 255, 255, 0.22) !important;
+        --td-font-gray-1: rgba(0, 0, 0, 0.9) !important;
+        --td-font-gray-2: rgba(0, 0, 0, 0.6) !important;
+        --td-font-gray-3: rgba(0, 0, 0, 0.4) !important;
+        --td-font-gray-4: rgba(0, 0, 0, 0.26) !important;
+        --td-brand-color: var(--td-brand-color-8) !important;
+        --td-warning-color: var(--td-warning-color-5) !important;
+        --td-error-color: var(--td-error-color-6) !important;
+        --td-success-color: var(--td-success-color-5) !important;
+        --td-brand-color-hover: var(--td-brand-color-7) !important;
+        --td-brand-color-focus: var(--td-brand-color-2) !important;
+        --td-brand-color-active: var(--td-brand-color-9) !important;
+        --td-brand-color-disabled: var(--td-brand-color-3) !important;
+        --td-brand-color-light: var(--td-brand-color-1) !important;
+        --td-warning-color-hover: var(--td-warning-color-4) !important;
+        --td-warning-color-focus: var(--td-warning-color-2) !important;
+        --td-warning-color-active: var(--td-warning-color-6) !important;
+        --td-warning-color-disabled: var(--td-warning-color-3) !important;
+        --td-warning-color-light: var(--td-warning-color-1) !important;
+        --td-error-color-hover: var(--td-error-color-5) !important;
+        --td-error-color-focus: var(--td-error-color-2) !important;
+        --td-error-color-active: var(--td-error-color-7) !important;
+        --td-error-color-disabled: var(--td-error-color-3) !important;
+        --td-error-color-light: var(--td-error-color-1) !important;
+        --td-success-color-hover: var(--td-success-color-4) !important;
+        --td-success-color-focus: var(--td-success-color-2) !important;
+        --td-success-color-active: var(--td-success-color-6) !important;
+        --td-success-color-disabled: var(--td-success-color-3) !important;
+        --td-success-color-light: var(--td-success-color-1) !important;
+        --td-mask-active: rgba(0, 0, 0, 0.4) !important;
+        --td-mask-disabled: rgba(0, 0, 0, 0.6) !important;
+        --td-bg-color-page: var(--td-gray-color-14) !important;
+        --td-bg-color-container: var(--td-gray-color-13) !important;
+        --td-bg-color-container-hover: var(--td-gray-color-12) !important;
+        --td-bg-color-container-active: var(--td-gray-color-10) !important;
+        --td-bg-color-container-select: var(--td-gray-color-9) !important;
+        --td-bg-color-secondarycontainer: var(--td-gray-color-12) !important;
+        --td-bg-color-secondarycontainer-hover: var(--td-gray-color-11) !important;
+        --td-bg-color-secondarycontainer-active: var(--td-gray-color-9) !important;
+        --td-bg-color-component: var(--td-gray-color-11) !important;
+        --td-bg-color-component-hover: var(--td-gray-color-10) !important;
+        --td-bg-color-component-active: var(--td-gray-color-9) !important;
+        --td-bg-color-component-disabled: var(--td-gray-color-12) !important;
+        --td-bg-color-specialcomponent: transparent !important;
+        --td-text-color-primary: var(--td-font-white-1) !important;
+        --td-text-color-secondary: var(--td-font-white-2) !important;
+        --td-text-color-placeholder: var(--td-font-white-3) !important;
+        --td-text-color-disabled: var(--td-font-white-4) !important;
+        --td-text-color-anti: #fff !important;
+        --td-text-color-brand: var(--td-brand-color-8) !important;
+        --td-text-color-link: var(--td-brand-color-8) !important;
+        --td-border-level-1-color: var(--td-gray-color-11) !important;
+        --td-component-stroke: var(--td-gray-color-11) !important;
+        --td-border-level-2-color: var(--td-gray-color-9) !important;
+        --td-component-border: var(--td-gray-color-9) !important;
+        --td-shadow-1: 0 4px 6px rgba(0, 0, 0, 0.06), 0 1px 10px rgba(0, 0, 0, 8%), 0 2px 4px rgba(0, 0, 0, 12%) !important;
+        --td-shadow-2: 0 8px 10px rgba(0, 0, 0, 0.12), 0 3px 14px rgba(0, 0, 0, 10%), 0 5px 5px rgba(0, 0, 0, 16%) !important;
+        --td-shadow-3: 0 16px 24px rgba(0, 0, 0, 0.14), 0 6px 30px rgba(0, 0, 0, 12%), 0 8px 10px rgba(0, 0, 0, 20%) !important;
+        --td-shadow-inset-top: inset 0 0.5px 0 #5e5e5e !important;
+        --td-shadow-inset-right: inset 0.5px 0 0 #5e5e5e !important;
+        --td-shadow-inset-bottom: inset 0 -0.5px 0 #5e5e5e !important;
+        --td-shadow-inset-left: inset -0.5px 0 0 #5e5e5e !important;
+        --td-table-shadow-color: rgba(0, 0, 0, 0.55) !important;
+        --td-scrollbar-color: rgba(255, 255, 255, 0.1) !important;
+        --u-bg-color: #222;
+    }
 }
 
 html,
@@ -125,6 +252,7 @@ body {
     width: 100%;
     height: 100%;
     margin: 0;
+    background: var(--u-bg-color);
 }
 
 #app {
@@ -148,4 +276,8 @@ body {
 
 .t-popup .t-select__dropdown-inner ul {
     padding-left: 0;
+}
+
+.t-breadcrumb__separator svg {
+    color: var(--td-font-white-1);
 }

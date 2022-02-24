@@ -169,6 +169,7 @@
     font-size: 48px;
     border: 2px solid var(--td-gray-color-6);
     border-radius: 5px;
+    color: var(--td-text-color-primary);
 }
 
 .buttons {
