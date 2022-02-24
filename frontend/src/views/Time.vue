@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-    import { onMounted, onUnmounted, ref } from 'vue'
+    import { onMounted, onBeforeUnmount, ref } from 'vue'
     import { useRouter } from 'vue-router'
     import { loadCategoriesAPI, startItemAPI, stopItemAPI, todoItemAPI } from '../api/circle'
     import { MessagePlugin } from 'tdesign-vue-next'
@@ -74,38 +74,38 @@
     }
 
     const timeCount = ref('00:00:00')
-    const refreshInterval = setInterval(() => {
-        if (countInfo.value.id === 0) {
-            return
-        }
-        const now = new Date()
-        const dateDiff = now.getTime() - countInfo.value.start_at.getTime()
-        let leftDiff, hour, minute, second
-        hour = Math.floor(dateDiff / (3600 * 1000))
-        leftDiff = dateDiff % (3600 * 1000)
-        minute = Math.floor(leftDiff / (60 * 1000))
-        leftDiff = leftDiff % (60 * 1000)
-        second = Math.round(leftDiff / 1000)
-        timeCount.value = formatNumber(hour) + ':' + formatNumber(minute) + ':' + formatNumber(second)
-    }, 1000)
-    onUnmounted(() => {
+    const refreshInterval = ref(null)
+    onMounted(() => {
+        refreshInterval.value = setInterval(() => {
+            if (countInfo.value.id === 0) {
+                return
+            }
+            const now = new moment()
+            const start = new moment(countInfo.value.start_at)
+            const dateDiff = moment.duration(now.diff(start)).as('seconds')
+            let leftDiff, hour, minute, second
+            hour = Math.floor(dateDiff / 3600)
+            leftDiff = dateDiff % 3600
+            minute = Math.floor(leftDiff / 60)
+            leftDiff = leftDiff % 60
+            second = Math.round(leftDiff)
+            timeCount.value = formatNumber(hour) + ':' + formatNumber(minute) + ':' + formatNumber(second)
+        }, 1000)
+    })
+    onBeforeUnmount(() => {
         clearInterval(refreshInterval.value)
     })
 
     const countInfo = ref({
         'id': 0,
         'category_id': 0,
-        'start_at': new Date()
+        'start_at': ''
     })
     const countControl = () => {
         setLoading(true)
         if (countInfo.value.id === 0) {
             startItemAPI({ 'category_id': currentCategory.value }).then(
-                res => {
-                    const data = res.data.data
-                    data.start_at = new Date(data.start_at)
-                    countInfo.value = data
-                },
+                res => countInfo.value = res.data.data,
                 err => MessagePlugin.error(err.data.msg)
             ).finally(() => setLoading(false))
         } else {
@@ -129,10 +129,8 @@
     const loadTodoItem = () => todoItemAPI().then(
         res => {
             if (res.data.data.todo) {
-                const data = res.data.data.item
-                data.start_at = new Date(data.start_at)
-                countInfo.value = data
-                currentCategory.value = data.category_id
+                countInfo.value = res.data.data.item
+                currentCategory.value = countInfo.value.category_id
             }
         }, err => MessagePlugin.error(err.data.msg)
     )
