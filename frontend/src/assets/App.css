@@ -260,10 +260,6 @@ body {
     width: 100%;
 }
 
-.t-loading__gradient-conic {
-    transform: unset !important;
-}
-
 .t-layout, .t-layout__direction-vertical {
     background: unset !important;
 }
