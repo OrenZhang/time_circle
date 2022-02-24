@@ -126,11 +126,6 @@
                 {
                     type: 'pie',
                     data: source,
-                    color: [
-                        '#48c79c',
-                        '#f78d94',
-                        '#699ef5',
-                    ],
                     roseType: 'area'
                 }
             ],
