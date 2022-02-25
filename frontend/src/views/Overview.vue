@@ -69,7 +69,7 @@
         {
             align: 'left',
             colKey: 'full_name',
-            title: '目录',
+            title: '类别',
         },
         {
             align: 'left',
