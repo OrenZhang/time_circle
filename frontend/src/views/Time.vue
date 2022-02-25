@@ -28,6 +28,7 @@
                         mode="date"
                         format="YYYY-MM-DD HH:mm:ss"
                         enable-time-picker
+                        :disable-date="disableDate"
                         v-model:value="endAt"
                     />
                 </t-form-item>
@@ -162,6 +163,8 @@
         }, err => MessagePlugin.error(err.data.msg)
     )
     onMounted(loadTodoItem)
+
+    const disableDate = (date) => date > new Date()
 </script>
 
 <style scoped>

@@ -5,7 +5,7 @@
                 {{ item.title }}
             </t-breadcrumbItem>
         </t-breadcrumb>
-        <t-date-picker mode="date" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
+        <t-date-picker mode="date" :disable-date="disableDate" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
         <div class="echart-box">
             <div id="echart-graph-0" style="width: 100%; height:360px;" />
         </div>
@@ -117,6 +117,8 @@
             grid: { x: 0, y: 0, x2: 0, y2: 0 }
         })
     }
+
+    const disableDate = (date) => date > new Date()
 </script>
 
 <style scoped>
