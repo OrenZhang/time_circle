@@ -95,26 +95,23 @@
     }
 
     const timeCount = ref('00:00:00')
-    const refreshInterval = ref(null)
-    onMounted(() => {
-        refreshInterval.value = setInterval(() => {
-            if (countInfo.value.id === 0) {
-                return
-            }
-            const now = new moment()
-            const start = new moment(countInfo.value.start_at)
-            const dateDiff = moment.duration(now.diff(start)).as('seconds')
-            let leftDiff, hour, minute, second
-            hour = Math.floor(dateDiff / 3600)
-            leftDiff = dateDiff % 3600
-            minute = Math.floor(leftDiff / 60)
-            leftDiff = leftDiff % 60
-            second = Math.round(leftDiff)
-            timeCount.value = formatNumber(hour) + ':' + formatNumber(minute) + ':' + formatNumber(second)
-        }, 1000)
-    })
+    const refreshInterval = setInterval(() => {
+        if (countInfo.value.id === 0) {
+            return
+        }
+        const now = new moment()
+        const start = new moment(countInfo.value.start_at)
+        const dateDiff = moment.duration(now.diff(start)).as('seconds')
+        let leftDiff, hour, minute, second
+        hour = Math.floor(dateDiff / 3600)
+        leftDiff = dateDiff % 3600
+        minute = Math.floor(leftDiff / 60)
+        leftDiff = leftDiff % 60
+        second = Math.round(leftDiff)
+        timeCount.value = formatNumber(hour) + ':' + formatNumber(minute) + ':' + formatNumber(second)
+    }, 1000)
     onBeforeUnmount(() => {
-        clearInterval(refreshInterval.value)
+        clearInterval(refreshInterval)
     })
 
     const countInfo = ref({

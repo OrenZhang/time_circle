@@ -7,7 +7,7 @@
         </t-breadcrumb>
         <t-date-picker mode="date" :disable-date="disableDate" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
         <div class="echart-box">
-            <div id="echart-graph-0" style="width: 100%; height:360px;" />
+            <div id="echart-graph-0" v-if="showChart" style="width: 100%; height:360px;" />
         </div>
         <t-table
             row-key="index"
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-    import { onMounted, ref } from 'vue'
+    import { onMounted, onUnmounted, ref } from 'vue'
     import { useRouter } from 'vue-router'
     import moment from 'moment'
     import { overviewChartAPI, overviewCommonAPI } from '../api/overview'
@@ -119,6 +119,10 @@
     }
 
     const disableDate = (date) => date > new Date()
+
+    const showChart = ref(true)
+    onMounted(() => showChart.value = true)
+    onUnmounted(() => showChart.value = false)
 </script>
 
 <style scoped>
