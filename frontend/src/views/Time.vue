@@ -28,6 +28,7 @@
                         mode="date"
                         format="YYYY-MM-DD HH:mm:ss"
                         enable-time-picker
+                        :disable-date="disableDate"
                         v-model:value="startAt"
                     />
                 </t-form-item>
@@ -37,6 +38,7 @@
                         mode="date"
                         format="YYYY-MM-DD HH:mm:ss"
                         enable-time-picker
+                        :disable-date="disableDate"
                         v-model:value="endAt"
                     />
                 </t-form-item>
