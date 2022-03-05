@@ -20,15 +20,23 @@
         </div>
         <t-dialog
             v-model:visible="endAtVisible" :cancel-btn="null" :confirm-btn="null"
-            header="结束计时" class="submit-dialog">
+            header="确认时间" class="submit-dialog">
             <t-form label-width="60px" :colon="true" @submit="doEnd">
-                <t-form-item label="时间" name="datetime">
+                <t-form-item label="开始" name="datetime">
                     <t-date-picker
                         theme="primary"
                         mode="date"
                         format="YYYY-MM-DD HH:mm:ss"
                         enable-time-picker
-                        :disable-date="disableDate"
+                        v-model:value="startAt"
+                    />
+                </t-form-item>
+                <t-form-item label="结束" name="datetime">
+                    <t-date-picker
+                        theme="primary"
+                        mode="date"
+                        format="YYYY-MM-DD HH:mm:ss"
+                        enable-time-picker
                         v-model:value="endAt"
                     />
                 </t-form-item>
@@ -119,6 +127,7 @@
         'category_id': 0,
         'start_at': ''
     })
+    const startAt = ref(null)
     const endAt = ref(null)
     const endAtVisible = ref(false)
     const countControl = () => {
@@ -129,6 +138,7 @@
                 err => MessagePlugin.error(err.data.msg)
             ).finally(() => setLoading(false))
         } else {
+            startAt.value = countInfo.value.start_at
             endAt.value = new moment().format('YYYY-MM-DD HH:mm:ss')
             endAtVisible.value = true
         }
@@ -136,7 +146,10 @@
     const doEnd = () => {
         endAtVisible.value = false
         setLoading(true)
-        stopItemAPI(countInfo.value.id, { end_at: endAt.value }).then(
+        stopItemAPI(
+            countInfo.value.id,
+            { start_at: startAt.value, end_at: endAt.value }
+        ).then(
             () => {
                 countInfo.value = {
                     'id': 0,

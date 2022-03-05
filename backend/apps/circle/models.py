@@ -45,6 +45,14 @@ class Category(models.Model):
         data.extend(category.families)
         return data
 
+    @property
+    def top_node(self):
+        """获取顶级目录"""
+        if self.parent_id == 0:
+            return self
+        category = Category.objects.get(id=self.parent_id)
+        return category.top_node
+
 
 class ItemManager(models.Manager):
     def unfinished_item(self, username):

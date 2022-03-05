@@ -1,5 +1,6 @@
 import datetime
 
+from django.db.models import Q
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet, mixins
@@ -28,7 +29,12 @@ class CategoryView(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.queryset.filter(creator=request.user)
+        parent_ids = self.queryset.filter(creator=request.user.username).values_list(
+            "parent_id", flat=True
+        )
+        queryset = self.queryset.filter(
+            ~Q(id__in=parent_ids) & Q(creator=request.user.username)
+        )
         serializer = CategoryReadSerializer(queryset, many=True)
         data = list(serializer.data)
         data.sort(key=lambda x: x["full_name"])
@@ -44,10 +50,6 @@ class CategoryView(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         self.get_object().delete()
-        return Response()
-
-    @action(methods=["GET"], detail=False)
-    def tree(self, request, *args, **kwargs):
         return Response()
 
     @action(methods=["GET"], detail=True)
@@ -91,8 +93,10 @@ class ItemView(mixins.CreateModelMixin, GenericViewSet):
         serializer = ItemStopSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         end_at = serializer.validated_data["end_at"]
-        if end_at <= instance.start_at:
+        start_at = serializer.validated_data["start_at"]
+        if end_at <= start_at:
             raise OperationError("结束时间需要大于开始时间")
+        instance.start_at = start_at
         instance.end_at = end_at
         instance.archived = True
         instance.save()
@@ -162,7 +166,7 @@ class OverviewView(GenericViewSet):
         return Response(data)
 
     @action(methods=["POST"], detail=False)
-    def common(self, request, *args, **kwargs):
+    def details(self, request, *args, **kwargs):
         start_date, end_date = self.verify_date(request.data)
         categories = Category.objects.filter(creator=request.user.username)
         items = Item.objects.filter(
@@ -182,6 +186,42 @@ class OverviewView(GenericViewSet):
                 tmp[category.id]["value"] = item.duration
         data = []
         for category in tmp.values():
+            category["duration_format"] = duration_format(category["value"])
+            data.append(category)
+        data.sort(key=lambda x: x["value"], reverse=True)
+        return Response(data)
+
+    @action(methods=["POST"], detail=False)
+    def common(self, request, *args, **kwargs):
+        # 校验
+        start_date, end_date = self.verify_date(request.data)
+        # 获取用户目录
+        categories = Category.objects.filter(creator=request.user.username)
+        category_map = {
+            category.id: {"instance": category, "duration": 0}
+            for category in categories
+        }
+        # 获取时间内的所有事项
+        items = Item.objects.filter(
+            category_id__in=categories.values_list("id", flat=True),
+            start_at__gte=start_date,
+            start_at__lt=end_date + datetime.timedelta(days=1),
+            archived=True,
+        )
+        # 为事项顶级添加时间
+        for item in items:
+            node_id = category_map[item.category_id]["instance"].top_node.id
+            category_map[node_id]["duration"] += item.duration
+        # 为序列化后的数据添加时间
+        temp_data = CategoryReadSerializer(instance=categories, many=True).data
+        data_map = {category["id"]: category for category in temp_data}
+        for category_id, category_map_data in category_map.items():
+            data_map[category_id]["value"] = category_map_data["duration"]
+        # 处理响应数据
+        data = []
+        for category in data_map.values():
+            if category["value"] < 1:
+                continue
             category["duration_format"] = duration_format(category["value"])
             data.append(category)
         data.sort(key=lambda x: x["value"], reverse=True)

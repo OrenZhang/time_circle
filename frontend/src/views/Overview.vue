@@ -5,7 +5,20 @@
                 {{ item.title }}
             </t-breadcrumbItem>
         </t-breadcrumb>
-        <t-date-picker mode="date" :disable-date="disableDate" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
+        <div class="header-box">
+            <t-radio-group :value="tabValue" @change="changeTab">
+                <t-radio-button value="detail">
+                    细化
+                </t-radio-button>
+                <t-radio-button value="overview">
+                    总览
+                </t-radio-button>
+                <t-radio-button value="rollback" :disabled="true">
+                    回溯
+                </t-radio-button>
+            </t-radio-group>
+            <t-date-picker mode="date" :disable-date="disableDate" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
+        </div>
         <div class="echart-box">
             <div id="echart-graph-0" v-if="showChart" style="width: 100%; height:360px;" />
         </div>
@@ -24,7 +37,7 @@
     import { onMounted, onUnmounted, ref } from 'vue'
     import { useRouter } from 'vue-router'
     import moment from 'moment'
-    import { overviewChartAPI, overviewCommonAPI } from '../api/overview'
+    import { overviewChartAPI, overviewCommonAPI, overviewDetailAPI } from '../api/overview'
     import { MessagePlugin } from 'tdesign-vue-next'
     import * as echarts from 'echarts/core'
     import { PieChart } from 'echarts/charts'
@@ -85,17 +98,25 @@
         loadData()
     }
 
-    const loadData = () => overviewCommonAPI({
-        start_date: dateRange.value[0],
-        end_date: dateRange.value[1]
-    }).then(
-        res => {
-            categories.value = res.data.data
-            initEcharts(res.data.data)
-        },
-        err => MessagePlugin.error(err.data.msg)
-    )
-    onMounted(loadData)
+    const loadData = () => {
+        let promise
+        const data = {
+            start_date: dateRange.value[0],
+            end_date: dateRange.value[1]
+        }
+        if (tabValue.value === 'overview') {
+            promise = overviewCommonAPI(data)
+        } else if (tabValue.value === 'detail') {
+            promise = overviewDetailAPI(data)
+        }
+        promise.then(
+            res => {
+                categories.value = res.data.data
+                initEcharts(res.data.data)
+            },
+            err => MessagePlugin.error(err.data.msg)
+        )
+    }
 
     const initEcharts = (data) => {
         const myChart = echarts.init(document.getElementById('echart-graph-0'))
@@ -123,6 +144,20 @@
     const showChart = ref(true)
     onMounted(() => showChart.value = true)
     onUnmounted(() => showChart.value = false)
+
+    const tabValue = ref('detail')
+    const changeTab = (tab) => {
+        tabValue.value = tab
+        localStorage.setItem('overviewTabValue', tab)
+        loadData()
+    }
+    onMounted(() => {
+        const tab = localStorage.getItem('overviewTabValue')
+        if (tab) {
+            tabValue.value = tab
+        }
+        loadData()
+    })
 </script>
 
 <style scoped>
@@ -131,6 +166,26 @@
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+}
+
+.header-box {
+    display: flex;
+    width: 100%;
+}
+
+.header-box .t-date-picker {
+    width: 100%;
+    margin-left: 20px;
+}
+
+@media screen and (max-width: 600px) {
+    .header-box {
+        flex-direction: column;
+    }
+    .header-box .t-date-picker {
+        margin-top: 20px;
+        margin-left: 0;
+    }
 }
 
 .t-breadcrumb,
