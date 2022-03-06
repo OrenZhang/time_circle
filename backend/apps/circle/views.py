@@ -112,8 +112,7 @@ class ItemView(mixins.CreateModelMixin, GenericViewSet):
             return Response({"todo": False, "item": None})
         item = items.first()
         serializer = self.get_serializer(item)
-        resp = {"todo": True, "item": serializer.data}
-        return Response(resp)
+        return Response({"todo": True, "item": serializer.data})
 
 
 class OverviewView(GenericViewSet):
@@ -129,16 +128,11 @@ class OverviewView(GenericViewSet):
         end_date = req_serializer.validated_data["end_date"]
         return start_date, end_date
 
-    @action(methods=["POST"], detail=False)
-    def full(self, request, *args, **kwargs):
+    def init_data(self, request):
         # 校验
         start_date, end_date = self.verify_date(request.data)
         # 获取用户目录
         categories = Category.objects.filter(creator=request.user.username)
-        category_map = {
-            category.id: {"instance": category, "duration": 0}
-            for category in categories
-        }
         # 获取时间内的所有事项
         items = Item.objects.filter(
             category_id__in=categories.values_list("id", flat=True),
@@ -146,78 +140,9 @@ class OverviewView(GenericViewSet):
             start_at__lt=end_date + datetime.timedelta(days=1),
             archived=True,
         )
-        # 为事项所在层级及以上层级添加时间
-        for item in items:
-            for node_id in category_map[item.category_id]["instance"].families:
-                category_map[node_id]["duration"] += item.duration
-        # 为序列化后的数据添加时间
-        temp_data = CategoryReadSerializer(instance=categories, many=True).data
-        data_map = {category["id"]: category for category in temp_data}
-        for category_id, category_map_data in category_map.items():
-            data_map[category_id]["duration"] = category_map_data["duration"]
-        # 处理响应数据
-        data = []
-        for category in data_map.values():
-            if category["duration"] < 1:
-                continue
-            category["duration_format"] = duration_format(category["duration"])
-            data.append(category)
-        data.sort(key=lambda x: x["duration"], reverse=True)
-        return Response(data)
+        return start_date, end_date, categories, items
 
-    @action(methods=["POST"], detail=False)
-    def details(self, request, *args, **kwargs):
-        start_date, end_date = self.verify_date(request.data)
-        categories = Category.objects.filter(creator=request.user.username)
-        items = Item.objects.filter(
-            category_id__in=categories.values_list("id", flat=True),
-            start_at__gte=start_date,
-            start_at__lt=end_date + datetime.timedelta(days=1),
-            archived=True,
-        )
-        tmp = {}
-        for item in items:
-            if item.category_id in tmp.keys():
-                tmp[item.category_id]["value"] += item.duration
-            else:
-                category = categories.get(id=item.category_id)
-                serialzier = CategoryReadSerializer(category)
-                tmp[category.id] = serialzier.data
-                tmp[category.id]["value"] = item.duration
-        data = []
-        for category in tmp.values():
-            category["duration_format"] = duration_format(category["value"])
-            data.append(category)
-        data.sort(key=lambda x: x["value"], reverse=True)
-        return Response(data)
-
-    @action(methods=["POST"], detail=False)
-    def common(self, request, *args, **kwargs):
-        # 校验
-        start_date, end_date = self.verify_date(request.data)
-        # 获取用户目录
-        categories = Category.objects.filter(creator=request.user.username)
-        category_map = {
-            category.id: {"instance": category, "duration": 0}
-            for category in categories
-        }
-        # 获取时间内的所有事项
-        items = Item.objects.filter(
-            category_id__in=categories.values_list("id", flat=True),
-            start_at__gte=start_date,
-            start_at__lt=end_date + datetime.timedelta(days=1),
-            archived=True,
-        )
-        # 为事项顶级添加时间
-        for item in items:
-            node_id = category_map[item.category_id]["instance"].top_node.id
-            category_map[node_id]["duration"] += item.duration
-        # 为序列化后的数据添加时间
-        temp_data = CategoryReadSerializer(instance=categories, many=True).data
-        data_map = {category["id"]: category for category in temp_data}
-        for category_id, category_map_data in category_map.items():
-            data_map[category_id]["value"] = category_map_data["duration"]
-        # 处理响应数据
+    def init_response(self, data_map):
         data = []
         for category in data_map.values():
             if category["value"] < 1:
@@ -225,4 +150,66 @@ class OverviewView(GenericViewSet):
             category["duration_format"] = duration_format(category["value"])
             data.append(category)
         data.sort(key=lambda x: x["value"], reverse=True)
+        return data
+
+    def build_data_map(self, categories, category_map):
+        temp_data = CategoryReadSerializer(instance=categories, many=True).data
+        data_map = {category["id"]: category for category in temp_data}
+        for category_id, category_map_data in category_map.items():
+            data_map[category_id]["value"] = category_map_data["duration"]
+        return data_map
+
+    @action(methods=["POST"], detail=False)
+    def full(self, request, *args, **kwargs):
+        # 通用初始化
+        start_date, end_date, categories, items = self.init_data(request)
+        # 构造数据
+        category_map = {
+            category.id: {"instance": category, "duration": 0}
+            for category in categories
+        }
+        # 为事项所在层级及以上层级添加时间
+        for item in items:
+            for node_id in category_map[item.category_id]["instance"].families:
+                category_map[node_id]["duration"] += item.duration
+        # 为序列化后的数据添加时间
+        data_map = self.build_data_map(categories, category_map)
+        # 处理响应数据
+        data = self.init_response(data_map)
+        return Response(data)
+
+    @action(methods=["POST"], detail=False)
+    def details(self, request, *args, **kwargs):
+        # 通用初始化
+        start_date, end_date, categories, items = self.init_data(request)
+        # 为事项所在层级添加时间
+        tmp = {}
+        for item in items:
+            if item.category_id in tmp.keys():
+                tmp[item.category_id]["value"] += item.duration
+            else:
+                category = categories.get(id=item.category_id)
+                serializer = CategoryReadSerializer(category)
+                tmp[category.id] = serializer.data
+                tmp[category.id]["value"] = item.duration
+        data = self.init_response(tmp)
+        return Response(data)
+
+    @action(methods=["POST"], detail=False)
+    def common(self, request, *args, **kwargs):
+        # 通用初始化
+        start_date, end_date, categories, items = self.init_data(request)
+        # 构造数据
+        category_map = {
+            category.id: {"instance": category, "duration": 0}
+            for category in categories
+        }
+        # 为事项顶级添加时间
+        for item in items:
+            node_id = category_map[item.category_id]["instance"].top_node.id
+            category_map[node_id]["duration"] += item.duration
+        # 为序列化后的数据添加时间
+        data_map = self.build_data_map(categories, category_map)
+        # 处理响应数据
+        data = self.init_response(data_map)
         return Response(data)

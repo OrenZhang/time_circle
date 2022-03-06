@@ -56,6 +56,11 @@ class OverviewRequestSerializer(serializers.Serializer):
     start_date = serializers.DateTimeField(required=True, allow_null=False)
     end_date = serializers.DateTimeField(required=True, allow_null=False)
 
+    def validate(self, attrs):
+        if attrs["start_date"] > attrs["end_date"]:
+            raise serializers.ValidationError("结束日期应大于等于开始日期")
+        return attrs
+
 
 class OverviewSerializer(serializers.ModelSerializer):
     class Meta:
