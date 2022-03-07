@@ -119,6 +119,11 @@
     }
 
     const initEcharts = (data) => {
+        if (tabValue.value === 'detail') {
+            for (const i in data) {
+                data[i]['name'] = data[i]['full_name']
+            }
+        }
         const myChart = echarts.init(document.getElementById('echart-graph-0'))
         myChart.setOption({
             xAxis: {
