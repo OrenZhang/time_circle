@@ -26,10 +26,10 @@
         data: {
             type: Object,
             default: {
-                item_name: 'Work',
-                item_duration: 3600,
-                item_date: '1月10日',
-                start_at: '06:21'
+                item_name: '',
+                item_duration: 0,
+                item_date: '',
+                start_at: ''
             }
         },
         hasNext: {
