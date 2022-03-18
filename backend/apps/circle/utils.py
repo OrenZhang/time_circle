@@ -89,6 +89,7 @@ class StatisticHandlerBase:
                 "item_name": self.category_map[category_id].name,
                 "item_record_count": len(items),
                 "item_record_during": self.plus_items_duration(items),
+                "items": items,
             }
             for category_id, items in category_plus_map.items()
         }
@@ -108,21 +109,26 @@ class HomeStatisticHandler(StatisticHandlerBase):
 
 class EncounterStatisticHandler(StatisticHandlerBase):
     def get_max_item(self):
-        max_category = {"item_record_during": 0}
+        max_category = {"item_record_during": 0, "items": []}
         category_plus_map = self.plus_item_group_by_category()
         for category in category_plus_map.values():
             if category["item_record_during"] > max_category["item_record_during"]:
                 max_category = category
+        days = set()
+        days.update(
+            [item.start_at.strftime("%Y/%m/%d") for item in max_category["items"]]
+        )
+        max_category["item_record_during"] = len(days)
         return max_category
 
     def __call__(self, *args, **kwargs):
+        max_category = self.get_max_item()
         data = {
             "year": self.year,
-            "item_name": "",
-            "item_record_count": 0,
-            "item_record_during": 0,
+            "item_name": max_category["item_name"],
+            "item_record_count": max_category["item_record_count"],
+            "item_record_during": max_category["item_record_during"],
         }
-        data.update(self.get_max_item())
         return data
 
 
