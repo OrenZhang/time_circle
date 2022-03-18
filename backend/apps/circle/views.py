@@ -14,6 +14,8 @@ from apps.circle.serializers import (
     OverviewRequestSerializer,
     OverviewSerializer,
 )
+from apps.circle.utils import StatisticHandler
+from constents.statistic import STATISTIC_YEAR_CONFIG
 from utils.exceptions import Error404, OperationError, ParamsNotFound, PermissionDenied
 from utils.tools import duration_format
 
@@ -212,4 +214,33 @@ class OverviewView(GenericViewSet):
         data_map = self.build_data_map(categories, category_map)
         # 处理响应数据
         data = self.init_response(data_map)
+        return Response(data)
+
+
+class StatisticView(GenericViewSet):
+    """统计信息"""
+
+    queryset = Item.objects.all()
+
+    @action(methods=["GET"], detail=False)
+    def get_valid_year(self, request, *args, **kwargs):
+        return Response(
+            [{"label": year, "value": year} for year in STATISTIC_YEAR_CONFIG.keys()]
+        )
+
+    @action(methods=["POST"], detail=False)
+    def info(self, request, *args, **kwargs):
+        year = request.data.get("year")
+        if year not in STATISTIC_YEAR_CONFIG.keys():
+            raise OperationError("统计年份不合法")
+        categories = STATISTIC_YEAR_CONFIG.get(year, [])
+        data = {}
+        for category in categories:
+            handler = StatisticHandler.get_handler(category)
+            if handler is None:
+                continue
+            tmp = handler(year, request, *args, **kwargs)()
+            if tmp is None:
+                continue
+            data[category] = tmp
         return Response(data)

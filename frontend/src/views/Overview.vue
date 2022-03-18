@@ -6,17 +6,19 @@
             </t-breadcrumbItem>
         </t-breadcrumb>
         <div class="header-box">
-            <t-radio-group :value="tabValue" @change="changeTab">
-                <t-radio-button value="detail">
-                    细化
-                </t-radio-button>
-                <t-radio-button value="overview">
-                    总览
-                </t-radio-button>
-                <t-radio-button value="rollback" :disabled="true">
+            <div style="display: flex;">
+                <t-radio-group :value="tabValue" @change="changeTab">
+                    <t-radio-button value="detail">
+                        细化
+                    </t-radio-button>
+                    <t-radio-button value="overview">
+                        总览
+                    </t-radio-button>
+                </t-radio-group>
+                <t-button variant="outline" style="margin-left: 20px" @click="goToStatistic">
                     回溯
-                </t-radio-button>
-            </t-radio-group>
+                </t-button>
+            </div>
             <t-date-picker mode="date" :disable-date="disableDate" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
         </div>
         <div class="echart-box">
@@ -163,6 +165,10 @@
         }
         loadData()
     })
+    
+    const goToStatistic = () => {
+        router.push({ name: 'Statistic' })
+    }
 </script>
 
 <style scoped>

@@ -75,7 +75,6 @@ class Item(models.Model):
     start_at = models.DateTimeField("开始时间", auto_now_add=True)
     end_at = models.DateTimeField("结束时间", null=True)
     archived = models.BooleanField("存档状态", default=False)
-    ordering = ["-create_at"]
 
     objects = ItemManager()
 

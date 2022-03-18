@@ -28,6 +28,11 @@ const routes = [
         component: () => import('../views/Overview.vue')
     },
     {
+        path: '/statistic',
+        name: 'Statistic',
+        component: () => import('../views/Statistic.vue')
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: '404',
         component: () => import('../components/ErrorPage.vue')

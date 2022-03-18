@@ -1,5 +1,5 @@
 <template>
-    <t-loading :loading="mainLoading" fullscreen />
+    <t-loading :loading="mainLoading" :fullscreen="true" />
     <div v-if="!mainLoading" style="width: 100%; height: 100%">
         <router-view />
     </div>
