@@ -88,7 +88,12 @@
     const options = ref([])
     const loadOptions = () => {
         yearOptionsAPI().then(
-            res => options.value = res.data.data,
+            res => {
+                options.value = res.data.data
+                if (options.value.length > 0) {
+                    curYear.value = options.value[0].value
+                }
+            },
             err => MessagePlugin.error(err.data.msg)
         )
     }
@@ -111,7 +116,6 @@
 #st-container {
     width: 100%;
     height: 100%;
-    font-family: TencentSansW3, sans-serif;
 }
 
 .w100-h100-flex {
