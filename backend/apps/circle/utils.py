@@ -136,8 +136,8 @@ class MorningStatisticHandler(StatisticHandlerBase):
     def get_morning_item(self):
         items = self.items.filter(
             start_at__hour__gte=STATISTIC_MORNING_START_TIME,
-            start_at__hour__lte=STATISTIC_MORNING_END_TIME,
-        ).order_by("start_at")
+            start_at__hour__lt=STATISTIC_MORNING_END_TIME,
+        ).order_by("start_at__hour")
         if items.exists():
             return items.first()
         return None
@@ -159,8 +159,8 @@ class EveningStatisticHandler(StatisticHandlerBase):
     def get_evening_item(self):
         items = self.items.filter(
             start_at__hour__gte=STATISTIC_EVENING_START_TIME,
-            start_at__hour__lte=STATISTIC_EVENING_END_TIME,
-        ).order_by("-start_at")
+            start_at__hour__lt=STATISTIC_EVENING_END_TIME,
+        ).order_by("-start_at__hour")
         if items.exists():
             return items.first()
         return None
