@@ -8,17 +8,28 @@
             </t-col>
             <t-col :span="6">
                 <div style="padding: 40px; box-sizing: border-box" class="json-tree-div">
-                    <json-tree style="overflow: auto; height: 100%" :raw="data" />
+                    <json-tree style="overflow: auto; height: 100%" :raw="raw" />
                 </div>
             </t-col>
         </t-row>
+        <div class="trans-button-box">
+            <t-button class="btn-1" @click="raw = data">
+                <i class="fa-solid fa-angle-right" />
+            </t-button>
+            <t-button class="btn-2" @click="raw = initData; data = ''">
+                <i class="fa-solid fa-x" />
+            </t-button>
+        </div>
     </div>
 </template>
 
 <script setup>
     import JsonTree from 'vue-json-tree'
     import { ref } from 'vue'
+
+    const initData = '{"blue button": "format json", "red button": "clear json tree"}'
     const data = ref('')
+    const raw = ref(initData)
 </script>
 
 <style scoped>
@@ -67,8 +78,12 @@
     border-radius: 0;
 }
 
+.json-tree {
+    background-color: unset;
+}
+
 .json-tree-div {
-    background-color: #f7f8f9;
+    background-color: var(--td-gray-color-1);
     height: 100%;
 }
 
@@ -80,14 +95,33 @@
     color: var(--td-success-color);
 }
 
+.trans-button-box .btn-1,
+.trans-button-box .btn-2 {
+    position: fixed;
+    z-index: 100;
+    display: flex;
+    left: 50%;
+    top: 50%;
+    height: 36px;
+    width: 36px;
+    border-radius: 0;
+    border: unset;
+}
+
+.trans-button-box .btn-1 {
+    margin-left: -18px!important;
+    margin-top: -50px!important;
+    background-color: var(--td-brand-color-5);
+}
+
+.trans-button-box .btn-2 {
+    margin-left: -18px!important;
+    background-color: var(--td-error-color-5);
+}
+
 @media (prefers-color-scheme: dark) {
     .json-tree-div {
-        background-color: unset;
-    }
-
-    .json-tree {
-        background: unset;
-        color: white!important;
+        background-color: var(--td-gray-color-12);
     }
 
     .json-tree :deep(.json-tree-deep),
