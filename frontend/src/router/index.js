@@ -33,6 +33,11 @@ const routes = [
         component: () => import('../views/Statistic.vue')
     },
     {
+        path: '/json',
+        name: 'Json',
+        component: () => import('../views/Json.vue')
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: '404',
         component: () => import('../components/ErrorPage.vue')

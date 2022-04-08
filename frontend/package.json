@@ -17,6 +17,7 @@
         "tdesign-vue-next": "^0.10.2",
         "vue": "^3.2.16",
         "vue-axios": "^3.4.0",
+        "vue-json-tree": "^0.4.3",
         "vue-router": "^4.0.12",
         "vuex": "^4.0.2"
     },
