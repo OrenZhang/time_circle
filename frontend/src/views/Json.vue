@@ -6,17 +6,25 @@
                     <t-textarea style="height: calc(100vh - 80px);" v-model="data" />
                 </div>
             </t-col>
-            <t-col :span="6">
+            <t-col :span="6" v-if="!inTime">
                 <div style="padding: 40px; box-sizing: border-box" class="json-tree-div">
                     <json-tree style="overflow: auto; height: 100%" :raw="raw" />
                 </div>
             </t-col>
+            <t-col :span="6" v-else>
+                <div style="padding: 40px; box-sizing: border-box" class="json-tree-div">
+                    <json-tree style="overflow: auto; height: 100%" :raw="data" />
+                </div>
+            </t-col>
         </t-row>
         <div class="trans-button-box">
+            <t-button class="btn-0" @click="inTime = !inTime" :theme="inTime ? 'primary' : 'default'">
+                <i class="fa-solid fa-arrows-rotate" />
+            </t-button>
             <t-button class="btn-1" @click="raw = data">
                 <i class="fa-solid fa-angle-right" />
             </t-button>
-            <t-button class="btn-2" @click="raw = initData; data = ''">
+            <t-button class="btn-2" @click="raw = initData; data = initData">
                 <i class="fa-solid fa-x" />
             </t-button>
         </div>
@@ -27,9 +35,10 @@
     import JsonTree from 'vue-json-tree'
     import { ref } from 'vue'
 
-    const initData = '{"blue button": "format json", "red button": "clear json tree"}'
-    const data = ref('')
+    const initData = '{"1st button": "auto format", "2nd button": "format json", "3rd button": "clear data"}'
+    const data = ref('{"1st button": "auto format", "2nd button": "format json", "3rd button": "clear data"}')
     const raw = ref(initData)
+    const inTime = ref(true)
 </script>
 
 <style scoped>
@@ -95,6 +104,7 @@
     color: var(--td-success-color);
 }
 
+.trans-button-box .btn-0,
 .trans-button-box .btn-1,
 .trans-button-box .btn-2 {
     position: fixed;
@@ -108,14 +118,24 @@
     border: unset;
 }
 
+.trans-button-box :deep(.t-button--theme-primary) {
+    background-color: var(--td-brand-color-5);
+}
+
+.trans-button-box .btn-0 {
+    margin-left: -18px!important;
+    margin-top: -68px!important;
+}
+
 .trans-button-box .btn-1 {
     margin-left: -18px!important;
-    margin-top: -50px!important;
+    margin-top: -18px;
     background-color: var(--td-brand-color-5);
 }
 
 .trans-button-box .btn-2 {
     margin-left: -18px!important;
+    margin-top: 32px!important;
     background-color: var(--td-error-color-5);
 }
 
