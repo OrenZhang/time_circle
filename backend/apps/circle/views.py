@@ -9,6 +9,7 @@ from apps.circle.models import Category, Item
 from apps.circle.serializers import (
     CategoryReadSerializer,
     CategorySerializer,
+    ItemListSerializer,
     ItemSerializer,
     ItemStopSerializer,
     OverviewRequestSerializer,
@@ -66,11 +67,32 @@ class CategoryView(ModelViewSet):
         return Response(serializer.data)
 
 
-class ItemView(mixins.CreateModelMixin, GenericViewSet):
+class ItemView(mixins.CreateModelMixin, mixins.ListModelMixin, GenericViewSet):
     """事项"""
 
     queryset = Item.objects.filter(archived=False)
     serializer_class = ItemSerializer
+
+    def verify_date(self, data):
+        req_serializer = OverviewRequestSerializer(data=data)
+        req_serializer.is_valid(raise_exception=True)
+        start_date = req_serializer.validated_data["start_date"]
+        end_date = req_serializer.validated_data["end_date"]
+        return start_date, end_date
+
+    def list(self, request, *args, **kwargs):
+        start_date, end_date = self.verify_date(request.GET)
+        category_ids = Category.objects.filter(
+            creator=request.user.username
+        ).values_list("id", flat=True)
+        self.queryset = Item.objects.filter(
+            archived=True,
+            category_id__in=category_ids,
+            start_at__date__gte=start_date,
+            start_at__date__lt=end_date + datetime.timedelta(days=1),
+        ).order_by("-start_at")
+        self.serializer_class = ItemListSerializer
+        return super().list(request, *args, **kwargs)
 
     @action(methods=["POST"], detail=False)
     def start(self, request, *args, **kwargs):

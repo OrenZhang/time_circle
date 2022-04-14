@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.circle.models import Category, Item
+from utils.tools import duration_format
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -45,6 +46,48 @@ class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = "__all__"
+
+
+class ItemListSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    full_name = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
+    duration_format = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Item
+        fields = "__all__"
+
+    def get_parent_category(self, parent_id: int):
+        category = Category.objects.get(id=parent_id)
+        if category.parent_id == 0:
+            return category.name
+        return "{}/{}".format(
+            self.get_parent_category(category.parent_id), category.name
+        )
+
+    def get_full_name(self, item: Item):
+        try:
+            instance = Category.objects.get(id=item.category_id)
+        except Category.DoesNotExist:
+            return None
+        if instance.parent_id == 0:
+            return instance.name
+        return "{}/{}".format(
+            self.get_parent_category(instance.parent_id), instance.name
+        )
+
+    def get_name(self, item: Item):
+        try:
+            return Category.objects.get(id=item.category_id).name
+        except Category.DoesNotExist:
+            return None
+
+    def get_duration(self, item: Item):
+        return item.duration
+
+    def get_duration_format(self, item: Item):
+        return duration_format(item.duration)
 
 
 class ItemStopSerializer(serializers.Serializer):

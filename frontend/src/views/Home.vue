@@ -26,6 +26,13 @@
             }
         },
         {
+            title: 'Item',
+            bg: 'var(--td-warning-color-4)',
+            path: {
+                name: 'Item'
+            }
+        },
+        {
             title: 'Category',
             bg: 'var(--td-error-color-5)',
             path: {

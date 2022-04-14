@@ -58,7 +58,7 @@
         }
         loginAPI(loginData.value).then(
             res => {
-                MessagePlugin.success('登陆成功')
+                MessagePlugin.success('登录成功')
                 store.dispatch('getUserInfo')
                 router.push({ name: 'Home' })
             },

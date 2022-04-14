@@ -33,6 +33,11 @@ const routes = [
         component: () => import('../views/Statistic.vue')
     },
     {
+        path: '/item',
+        name: 'Item',
+        component: () => import('../views/Detail.vue')
+    },
+    {
         path: '/json',
         name: 'Json',
         component: () => import('../views/Json.vue')

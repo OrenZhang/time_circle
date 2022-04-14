@@ -48,3 +48,9 @@ export const todoItemAPI = () => new Promise((resolve, reject) => {
         '/circle/item/todo/'
     ).then(res => resolve(res), err => reject(err))
 })
+
+export const loadItemsAPI = (page, size, startAt, endAt) => new Promise((resolve, reject) => {
+    http.get(
+        '/circle/item/?page=' + page + '&size=' + size + '&start_date=' + startAt + '&end_date=' + endAt
+    ).then(res => resolve(res), err => reject(err))
+})

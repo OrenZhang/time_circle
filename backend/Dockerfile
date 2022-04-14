@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.10
 RUN mkdir /usr/src/time-circle /usr/src/time-circle/logs -p
 COPY . /usr/src/time-circle
 WORKDIR /usr/src/time-circle

@@ -64,6 +64,7 @@
     font-size: 12px;
     font-family: Menlo, Monaco, Consolas, monospace;
     color: var(--td-text-color-primary);
+    height: 100%;
 }
 
 .json-tree-box :deep(.t-textarea__inner:focus) {
