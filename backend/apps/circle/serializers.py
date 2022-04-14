@@ -93,6 +93,9 @@ class ItemListSerializer(serializers.ModelSerializer):
 class ItemStopSerializer(serializers.Serializer):
     start_at = serializers.DateTimeField(required=True, allow_null=False)
     end_at = serializers.DateTimeField(required=True, allow_null=False)
+    desc = serializers.CharField(
+        required=True, max_length=24, allow_null=True, allow_blank=True
+    )
 
 
 class OverviewRequestSerializer(serializers.Serializer):

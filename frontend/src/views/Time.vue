@@ -42,6 +42,9 @@
                         v-model:value="endAt"
                     />
                 </t-form-item>
+                <t-form-item label="描述" name="desc">
+                    <t-input v-model="itemDesc" :maxlength="24" :suffix="suffix" />
+                </t-form-item>
                 <t-form-item style="padding-top: 8px" class="submit-button">
                     <t-button theme="primary" type="submit" style="margin-right: 10px">
                         提交
@@ -53,7 +56,7 @@
 </template>
 
 <script setup>
-    import { onMounted, onBeforeUnmount, ref } from 'vue'
+    import { onMounted, onBeforeUnmount, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { loadCategoriesAPI, startItemAPI, stopItemAPI, todoItemAPI } from '../api/circle'
     import { MessagePlugin } from 'tdesign-vue-next'
@@ -132,6 +135,10 @@
     const startAt = ref(null)
     const endAt = ref(null)
     const endAtVisible = ref(false)
+    const itemDesc = ref('')
+    const suffix = computed(() => {
+        return `${itemDesc.value.length}/24`
+    })
     const countControl = () => {
         if (countInfo.value.id === 0) {
             setLoading(true)
@@ -145,12 +152,15 @@
             endAtVisible.value = true
         }
     }
-    const doEnd = () => {
+    const doEnd = ({ validateResult }) => {
+        if (validateResult !== true) {
+            return
+        }
         endAtVisible.value = false
         setLoading(true)
         stopItemAPI(
             countInfo.value.id,
-            { start_at: startAt.value, end_at: endAt.value }
+            { start_at: startAt.value, end_at: endAt.value, desc: itemDesc.value }
         ).then(
             () => {
                 countInfo.value = {
@@ -160,6 +170,7 @@
                 }
                 timeCount.value = '00:00:00'
                 currentCategory.value = null
+                itemDesc.value = ''
                 MessagePlugin.success('记录创建成功')
             },
             err => MessagePlugin.error(err.data.msg)

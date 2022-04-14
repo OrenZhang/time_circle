@@ -26,7 +26,14 @@
                 :hover="false"
                 :table-layout="'auto'"
                 :size="'medium'"
-            />
+            >
+                <template #name="{ row }">
+                    <div>{{ row.full_name }}</div>
+                    <div v-if="row.desc" style="color: var(--td-text-color-placeholder)">
+                        {{ row.desc }}
+                    </div>
+                </template>
+            </t-table>
         </div>
     </div>
 </template>
@@ -109,23 +116,20 @@
             width: 100
         },
         {
-            colKey: 'full_name',
+            colKey: 'name',
             title: '类别'
         },
         {
             colKey: 'start_at',
             title: '开始时间',
-            width: 200
         },
         {
             colKey: 'end_at',
             title: '结束时间',
-            width: 200
         },
         {
             colKey: 'duration_format',
             title: '时长(s)',
-            width: 200
         },
     ])
 </script>

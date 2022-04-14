@@ -118,10 +118,12 @@ class ItemView(mixins.CreateModelMixin, mixins.ListModelMixin, GenericViewSet):
         serializer.is_valid(raise_exception=True)
         end_at = serializer.validated_data["end_at"]
         start_at = serializer.validated_data["start_at"]
+        desc = serializer.validated_data["desc"]
         if end_at <= start_at:
             raise OperationError("结束时间需要大于开始时间")
         instance.start_at = start_at
         instance.end_at = end_at
+        instance.desc = desc
         instance.archived = True
         instance.save()
         return Response()
