@@ -30,6 +30,7 @@
                         enable-time-picker
                         :disable-date="disableDate"
                         v-model:value="startAt"
+                        :allow-input="true"
                     />
                 </t-form-item>
                 <t-form-item label="结束" name="datetime">
@@ -40,6 +41,7 @@
                         enable-time-picker
                         :disable-date="disableDate"
                         v-model:value="endAt"
+                        :allow-input="true"
                     />
                 </t-form-item>
                 <t-form-item label="描述" name="desc">
@@ -94,10 +96,13 @@
 
     const currentCategory = ref(null)
     const categories = ref([])
-    const loadCategories = () => loadCategoriesAPI().then(
-        res => categories.value = res.data.data,
-        err => MessagePlugin.error(err.data.msg)
-    )
+    const loadCategories = () => {
+        setLoading(true)
+        loadCategoriesAPI().then(
+            res => categories.value = res.data.data,
+            err => MessagePlugin.error(err.data.msg)
+        ).finally(() => setLoading(false))
+    }
     onMounted(loadCategories)
 
     const formatNumber = (num) => {

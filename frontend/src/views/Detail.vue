@@ -6,7 +6,7 @@
             </t-breadcrumbItem>
         </t-breadcrumb>
         <div class="detail-header">
-            <t-date-picker mode="date" :disable-date="disableDate" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
+            <t-date-range-picker mode="date" size="small" :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
             <t-pagination
                 v-model="paginator.page"
                 v-model:pageSize="paginator.size"
@@ -144,6 +144,7 @@
 
 .detail-header {
     display: flex;
+    justify-content: space-between;
     padding-bottom: 20px;
 }
 
@@ -151,8 +152,7 @@
     padding-bottom: 20px;
 }
 
-.detail-header .t-date-picker {
-    width: 100%;
+.detail-header .t-date-range-picker {
     margin-right: 20px;
 }
 
@@ -164,7 +164,7 @@
     .detail-header {
         flex-direction: column;
     }
-    .detail-header .t-date-picker {
+    .detail-header .t-date-range-picker {
         margin-bottom: 20px;
         margin-right: 0;
     }

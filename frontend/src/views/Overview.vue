@@ -15,11 +15,11 @@
                         总览
                     </t-radio-button>
                 </t-radio-group>
-                <t-button variant="outline" style="margin-left: 20px" @click="goToStatistic">
-                    回溯
-                </t-button>
+                <!--                <t-button variant="outline" style="margin-left: 20px" @click="goToStatistic">-->
+                <!--                    回溯-->
+                <!--                </t-button>-->
             </div>
-            <t-date-picker mode="date" :disable-date="disableDate" range :placeholder="['开始时间', '结束时间']" v-model="dateRange" @change="changeData" />
+            <t-date-range-picker mode="date" size="small" v-model="dateRange" @change="changeData" />
         </div>
         <div class="echart-box">
             <div id="echart-graph-0" v-if="showChart" style="width: 100%; height:360px;" />
@@ -184,7 +184,7 @@
     width: 100%;
 }
 
-.header-box .t-date-picker {
+.header-box .t-date-range-picker {
     width: 100%;
     margin-left: 20px;
 }
@@ -193,14 +193,14 @@
     .header-box {
         flex-direction: column;
     }
-    .header-box .t-date-picker {
+    .header-box .t-date-range-picker {
         margin-top: 20px;
         margin-left: 0;
     }
 }
 
 .t-breadcrumb,
-.t-date-picker {
+.t-date-range-picker {
     padding-bottom: 20px;
 }
 
